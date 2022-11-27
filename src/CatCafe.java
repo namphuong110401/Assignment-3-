@@ -19,6 +19,12 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
+		CatCafe newCafe = new CatCafe();
+		CatNode newNode = newCafe.root;
+		for (Cat cat: cafe) {
+			newCafe.hire(cat);
+			newNode.catEmployee = cat;
+		}
 	}
 
 
@@ -59,6 +65,11 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
+		ArrayList<Cat> listOfHonor = new ArrayList<>(numOfCatsToHonor);
+		if (this.)
+		for (int i = 0; i < numOfCatsToHonor; i++) {
+
+		}
 		return null;
 	}
 
@@ -105,7 +116,17 @@ public class CatCafe implements Iterable<Cat> {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			return null;
+			// add the element to the heap as binary search tree
+			if (c.getMonthHired() < catEmployee.getMonthHired()){
+				root.junior = root.hire(c);
+			} else if (c.getMonthHired() > catEmployee.getMonthHired()) {
+				root.senior = root.hire(c);
+			}
+
+			// build max heap
+
+
+			return root;
 		}
 
 		// remove c from the tree rooted at this and returns the root of the resulting tree
@@ -121,7 +142,12 @@ public class CatCafe implements Iterable<Cat> {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			return null;
+			if(root.senior == null){
+				return root.catEmployee;
+			} else {
+				root = root.senior;
+			}
+			return root.findMostSenior();
 		}
 
 		// find the cat with lowest seniority in the tree rooted at this
@@ -129,7 +155,12 @@ public class CatCafe implements Iterable<Cat> {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			return null;
+			if(root.junior == null){
+				return root.catEmployee;
+			} else {
+				root = root.senior;
+			}
+			return root.findMostJunior();
 		}
 
 		// Feel free to modify the toString() method if you'd like to see something else displayed.
