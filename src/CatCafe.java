@@ -66,10 +66,8 @@ public class CatCafe implements Iterable<Cat> {
 		 * TODO: ADD YOUR CODE HERE
 		 */
 		ArrayList<Cat> listOfHonor = new ArrayList<>(numOfCatsToHonor);
-		if (this.)
-		for (int i = 0; i < numOfCatsToHonor; i++) {
 
-		}
+
 		return null;
 	}
 
@@ -78,6 +76,7 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
+
 		return 0;
 	}
 
@@ -117,16 +116,86 @@ public class CatCafe implements Iterable<Cat> {
 			 * TODO: ADD YOUR CODE HERE
 			 */
 			// add the element to the heap as binary search tree
-			if (c.getMonthHired() < catEmployee.getMonthHired()){
-				root.junior = root.hire(c);
-			} else if (c.getMonthHired() > catEmployee.getMonthHired()) {
-				root.senior = root.hire(c);
+			insertCat(c);
+
+			//rotate
+			CatNode cur = new CatNode(c);
+			if(root == null){
+				root = cur;
+			} else {
+				while(cur != root && c.getFurThickness() > cur.parent.catEmployee.getFurThickness()){
+					//if c has thicker fur than its junior,  do right rotation
+					if (c.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
+						rightRotate(cur);
+					}
+					// if c has thinner fur than its senior, do left rotation
+					else if (c.getFurThickness() < cur.senior.catEmployee.getFurThickness()) {
+						leftRotate(cur);
+					}
+					cur = cur.parent;
+				}
+			}
+			return cur;
+		}
+
+		//Helper method: insert cat
+		private CatNode insertCat(Cat c){
+			if (root == null){
+				root = new CatNode(c);
+			}
+			// if seniority of cur cat - c < 0 => c is less senior
+			else if (c.compareTo(root.catEmployee) < 0 ){
+				root.junior = root.junior.insertCat(c);
+			}
+			// if seniority of cur cat - c > 0 => c is more senior
+			else if (c.compareTo(root.catEmployee) > 0 ) {
+				root.senior = root.senior.insertCat(c);
+			}
+			return root;
+		}
+
+		//helper method: left rotation
+		private void leftRotate(CatNode x){
+			CatNode y = x.senior; // assign x as the parent of the left subtree of y
+			x.senior = y.junior;
+			if (y.junior != root) {
+				y.junior.parent = x;
+			}
+			y.parent = x.parent;
+			if(x.parent == null){
+				root = y;
+			}
+			//if x is the left child of its parent p, make y as the left child of p
+			else if (x == x.parent.junior) {
+				x.parent.junior = y;
+			} else { // assign y as the right child of p
+				x.parent.senior = y;
+			}
+			y.junior = x;
+			x.parent = y; // make y as the parent of x
+
 			}
 
-			// build max heap
-
-
-			return root;
+		//helper method: right rotation
+		private void rightRotate(CatNode x){
+			//assign y as the parent of the right subtree of x
+			CatNode y = x.junior;
+			x.junior = y.senior;
+			if(y.senior != root){
+				y.senior.parent = x;
+			}
+			y.parent = x.parent;
+			if(x.parent == null){
+				root = y;
+			}
+			// if y the right child of its parent p, make x as the right child of p
+			else if (x == x.parent.senior) {
+				x.parent.senior = y;
+			} else { //assign x as the left child of p
+				x.parent.junior = y;
+			}
+			y.senior = x;
+			y.parent = x; // make x as the parent of y
 		}
 
 		// remove c from the tree rooted at this and returns the root of the resulting tree
@@ -134,7 +203,49 @@ public class CatCafe implements Iterable<Cat> {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
+			// remove seniorC to the left subtree
+			removeCat(c);
+
+			// if maxHeap still maintains, no need to downheap
+
+			// if maxheap breaks, do downheap
+			// determine which of the two children should be swapped in the parent position to do correct rotation
+
+
+
+
 			return null;
+		}
+
+		//helper method: removeCat
+		private CatNode removeCat(Cat c) {
+			if (root == null) { //tree is empty so nothing to remove
+				return null;
+			}
+			//if seniority of c < root.key, search to the left
+			else if (c.compareTo(root.catEmployee) < 0) {
+				root = root.junior.removeCat(c);
+			}
+			//if seniority of c > root.key, search to the right
+			else if (c.compareTo(root.catEmployee) > 0) {
+				root = root.senior.removeCat(c);
+			}
+			//if there is no left child, make root equal to right child
+			else if (root.junior == null) {
+				root = root.senior;
+			}
+			//if there is no right child, make root equal to left child
+			else if (root.senior == null){
+				root = root.junior;
+			}
+			// if c has both children
+			else{
+				//find most senior in the left subtree and update the root
+				root.catEmployee = root.junior.findMostSenior();
+				//call recursively remove on the left subtree to remove the most senior one
+				root.junior = root.junior.removeCat(root.catEmployee);
+			}
+			return root;
 		}
 
 		// find the cat with highest seniority in the tree rooted at this
