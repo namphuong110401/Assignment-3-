@@ -123,17 +123,23 @@ public class CatCafe implements Iterable<Cat> {
 
 			//rotate
 			while(cur != root){
-				//if c has thicker fur than its junior,  do right rotation
-				if (cur.junior != null && cur.catEmployee.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
-					rightRotate(cur);
-				}
-				// if c has thinner fur than its senior, do left rotation
-				else if (cur.senior != null && cur.catEmployee.getFurThickness() < cur.senior.catEmployee.getFurThickness()) {
-					leftRotate(cur);
-				}
+				maxHeapify(cur);
 				cur = cur.parent;
 			}
 			return cur;
+		}
+
+
+		//Helper method to do correct rotation
+		private void maxHeapify(CatNode cur){
+			//if c has thicker fur than its junior,  do right rotation
+			if (cur.junior != null && cur.catEmployee.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
+				rightRotate(cur);
+			}
+			// if c has thinner fur than its senior, do left rotation
+			else if (cur.senior != null && cur.catEmployee.getFurThickness() < cur.senior.catEmployee.getFurThickness()) {
+				leftRotate(cur);
+			}
 		}
 
 		//Helper method: search cat
@@ -222,19 +228,26 @@ public class CatCafe implements Iterable<Cat> {
 			 */
 			// remove seniorC to the left subtree
 			removeCat(root, c);
-			CatNode cur = searchCat(root, c);
+			CatNode cur = searchCat(root, root.catEmployee);
 
-			// if maxHeap still maintains, no need to downheap
-
-
-			// if maxheap breaks, do downheap
-			// determine which of the two children should be swapped in the parent position to do correct rotation
-
-
-
-
-			return null;
+			while(cur!=root) {
+				// if maxHeap still maintains, no need to downheap
+				if (cur.senior.catEmployee.getFurThickness() < cur.catEmployee.getFurThickness()
+						&& cur.junior.catEmployee.getFurThickness() < cur.catEmployee.getFurThickness()) {
+					break;
+				}
+				// if maxheap breaks, do downheap
+				// determine which of the two children should be swapped in the parent position to do correct rotation
+				else {
+					maxHeapify(cur);
+					cur = cur.parent;
+				}
+			}
+			return cur;
 		}
+
+
+
 
 		//helper method: removeCat
 		private CatNode removeCat(CatNode root, Cat c) {
@@ -259,7 +272,7 @@ public class CatCafe implements Iterable<Cat> {
 			}
 			// if c has both children
 			else{
-				//find most senior in the left subtree and update the root
+				//find most senior in the left subtree and update the root, replace c with mostSenior
 				root.catEmployee = root.junior.findMostSenior();
 				//call recursively remove on the left subtree to remove the most senior one
 				root.junior = removeCat(root.junior, root.catEmployee);
