@@ -116,49 +116,58 @@ public class CatCafe implements Iterable<Cat> {
 			 * TODO: ADD YOUR CODE HERE
 			 */
 			// add the element to the heap as binary search tree
-			insertCat(c);
+			insertCat(null, root, c);
 
 			//rotate
-			CatNode cur = new CatNode(c);
-			if(root == null){
-				root = cur;
-			} else {
-				while(cur != root && c.getFurThickness() > cur.parent.catEmployee.getFurThickness()){
-					//if c has thicker fur than its junior,  do right rotation
-					if (c.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
-						rightRotate(cur);
-					}
-					// if c has thinner fur than its senior, do left rotation
-					else if (c.getFurThickness() < cur.senior.catEmployee.getFurThickness()) {
-						leftRotate(cur);
-					}
-					cur = cur.parent;
+			CatNode cur = root;
+			while (true) {
+				if (c.compareTo(cur.catEmployee) > 0) {
+					cur = cur.senior;
 				}
+				else if (c.compareTo(cur.catEmployee) < 0) {
+					cur = cur.junior;
+				}
+				else {
+					break;
+				}
+			}
+			while(cur != root){
+				//if c has thicker fur than its junior,  do right rotation
+				if (cur.junior != null && cur.catEmployee.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
+					rightRotate(cur);
+				}
+				// if c has thinner fur than its senior, do left rotation
+				else if (cur.senior != null && cur.catEmployee.getFurThickness() < cur.senior.catEmployee.getFurThickness()) {
+					leftRotate(cur);
+				}
+				cur = cur.parent;
 			}
 			return cur;
 		}
 
 		//Helper method: insert cat
-		private CatNode insertCat(Cat c){
+		private CatNode insertCat(CatNode parent, CatNode root, Cat c){
 			if (root == null){
 				root = new CatNode(c);
+				root.parent = parent;
 			}
 			// if seniority of cur cat - c < 0 => c is less senior
 			else if (c.compareTo(root.catEmployee) < 0 ){
-				root.junior = root.junior.insertCat(c);
+				root.junior = insertCat(root, root.junior, c);
 			}
 			// if seniority of cur cat - c > 0 => c is more senior
 			else if (c.compareTo(root.catEmployee) > 0 ) {
-				root.senior = root.senior.insertCat(c);
+				root.senior = insertCat(root, root.senior, c);
 			}
 			return root;
 		}
+
 
 		//helper method: left rotation
 		private void leftRotate(CatNode x){
 			CatNode y = x.senior; // assign x as the parent of the left subtree of y
 			x.senior = y.junior;
-			if (y.junior != root) {
+			if (y.junior != null) {
 				y.junior.parent = x;
 			}
 			y.parent = x.parent;
@@ -181,7 +190,7 @@ public class CatCafe implements Iterable<Cat> {
 			//assign y as the parent of the right subtree of x
 			CatNode y = x.junior;
 			x.junior = y.senior;
-			if(y.senior != root){
+			if(y.senior != null){
 				y.senior.parent = x;
 			}
 			y.parent = x.parent;
@@ -204,7 +213,7 @@ public class CatCafe implements Iterable<Cat> {
 			 * TODO: ADD YOUR CODE HERE
 			 */
 			// remove seniorC to the left subtree
-			removeCat(c);
+			removeCat(root, c);
 
 			// if maxHeap still maintains, no need to downheap
 
@@ -218,17 +227,17 @@ public class CatCafe implements Iterable<Cat> {
 		}
 
 		//helper method: removeCat
-		private CatNode removeCat(Cat c) {
+		private CatNode removeCat(CatNode root, Cat c) {
 			if (root == null) { //tree is empty so nothing to remove
 				return null;
 			}
 			//if seniority of c < root.key, search to the left
 			else if (c.compareTo(root.catEmployee) < 0) {
-				root = root.junior.removeCat(c);
+				root = removeCat(root.junior, c);
 			}
 			//if seniority of c > root.key, search to the right
 			else if (c.compareTo(root.catEmployee) > 0) {
-				root = root.senior.removeCat(c);
+				root = removeCat(root.senior, c);
 			}
 			//if there is no left child, make root equal to right child
 			else if (root.junior == null) {
@@ -243,7 +252,7 @@ public class CatCafe implements Iterable<Cat> {
 				//find most senior in the left subtree and update the root
 				root.catEmployee = root.junior.findMostSenior();
 				//call recursively remove on the left subtree to remove the most senior one
-				root.junior = root.junior.removeCat(root.catEmployee);
+				root.junior = removeCat(root.junior, root.catEmployee);
 			}
 			return root;
 		}
