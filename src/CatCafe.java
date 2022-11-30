@@ -232,7 +232,7 @@ public class CatCafe implements Iterable<Cat> {
 
 			while(cur!=root) {
 				// if maxHeap still maintains, no need to downheap
-				if (cur.catEmployee.getFurThickness() < cur.parent.catEmployee.getFurThickness()) {
+				if (cur.parent!= null && cur.catEmployee.getFurThickness() < cur.parent.catEmployee.getFurThickness()) {
 					break;
 				}
 				// if maxheap breaks, do downheap
@@ -348,6 +348,31 @@ public class CatCafe implements Iterable<Cat> {
 			return false;
 		}
 
+	}
+
+	public void printTree(CatNode root)
+	{
+		//Thanks, GeeksForGeeks!:D
+		printTree(root, 0);
+		System.out.println("\n\n----------------------------------------------------------\n\n");
+
+	}
+	private void printTree(CatNode root, int spaceCount)
+	{
+		if(root==null)
+			return;
+
+		int spacing = spaceCount+20;
+
+		printTree(root.senior, spacing);
+
+
+		System.out.println();
+		for(int index=0; index < spacing; index++)
+			System.out.print(" ");
+		System.out.println(root.catEmployee);
+
+		printTree(root.junior, spacing);
 	}
 
 	public static void main(String[] args) {

@@ -105,7 +105,7 @@ class test_retire_1 implements Runnable{
         cafe.hire(A);
         cafe.hire(B);
         cafe.retire(B);
-        cafe.toString();
+
 
         if (!(cafe.root.catEmployee.equals(A) && cafe.root.senior==null && cafe.root.junior==null)) {
             throw new AssertionError("Cat A should be only cat left in the tree");
