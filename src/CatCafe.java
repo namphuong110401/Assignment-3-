@@ -118,19 +118,10 @@ public class CatCafe implements Iterable<Cat> {
 			// add the element to the heap as binary search tree
 			insertCat(null, root, c);
 
+			// search the node of c
+			CatNode cur = searchCat(root, c);
+
 			//rotate
-			CatNode cur = root;
-			while (true) {
-				if (c.compareTo(cur.catEmployee) > 0) {
-					cur = cur.senior;
-				}
-				else if (c.compareTo(cur.catEmployee) < 0) {
-					cur = cur.junior;
-				}
-				else {
-					break;
-				}
-			}
 			while(cur != root){
 				//if c has thicker fur than its junior,  do right rotation
 				if (cur.junior != null && cur.catEmployee.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
@@ -141,6 +132,23 @@ public class CatCafe implements Iterable<Cat> {
 					leftRotate(cur);
 				}
 				cur = cur.parent;
+			}
+			return cur;
+		}
+
+		//Helper method: search cat
+		private CatNode searchCat(CatNode root, Cat c){
+			CatNode cur = root;
+			while (true) {
+				if (c.compareTo(cur.catEmployee) > 0) {
+					return searchCat(cur.senior, c);
+				}
+				else if (c.compareTo(cur.catEmployee) < 0) {
+					return searchCat(cur.junior, c);
+				}
+				else {
+					break;
+				}
 			}
 			return cur;
 		}
@@ -214,8 +222,10 @@ public class CatCafe implements Iterable<Cat> {
 			 */
 			// remove seniorC to the left subtree
 			removeCat(root, c);
+			CatNode cur = searchCat(root, c);
 
 			// if maxHeap still maintains, no need to downheap
+
 
 			// if maxheap breaks, do downheap
 			// determine which of the two children should be swapped in the parent position to do correct rotation
