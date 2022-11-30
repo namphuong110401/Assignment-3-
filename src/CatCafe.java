@@ -232,8 +232,7 @@ public class CatCafe implements Iterable<Cat> {
 
 			while(cur!=root) {
 				// if maxHeap still maintains, no need to downheap
-				if (cur.senior.catEmployee.getFurThickness() < cur.catEmployee.getFurThickness()
-						&& cur.junior.catEmployee.getFurThickness() < cur.catEmployee.getFurThickness()) {
+				if (cur.catEmployee.getFurThickness() < cur.parent.catEmployee.getFurThickness()) {
 					break;
 				}
 				// if maxheap breaks, do downheap
