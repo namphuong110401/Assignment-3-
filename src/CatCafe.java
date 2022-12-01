@@ -19,12 +19,14 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
-		CatCafe newCafe = new CatCafe();
-		CatNode newNode = newCafe.root;
-		for (Cat cat: cafe) {
-			newCafe.hire(cat);
-			newNode.catEmployee = cat;
-		}
+
+		this.root = cafe.root;
+		this.root.senior = cafe.root.senior;
+		this.root.junior = cafe.root.junior;
+		this.root.parent = cafe.root.parent;
+		this.root.catEmployee = cafe.root.catEmployee;
+
+
 	}
 
 
@@ -66,9 +68,23 @@ public class CatCafe implements Iterable<Cat> {
 		 * TODO: ADD YOUR CODE HERE
 		 */
 		ArrayList<Cat> listOfHonor = new ArrayList<>(numOfCatsToHonor);
-
-
-		return null;
+		if(numOfCatsToHonor == 1){
+			listOfHonor.add(root.catEmployee);
+		} else {
+			while (root != null && numOfCatsToHonor != 1) {
+				// add the root first
+				listOfHonor.add(root.catEmployee);
+				// add the child that has thicker fur
+				if (root.senior.catEmployee.getFurThickness() > root.junior.catEmployee.getFurThickness()) {
+					listOfHonor.add(root.senior.catEmployee);
+				} else {
+					listOfHonor.add(root.junior.catEmployee);
+				}
+				retire(root.catEmployee);
+				numOfCatsToHonor--;
+			}
+		}
+		return listOfHonor;
 	}
 
 	// Returns the expected grooming cost the cafe has to incur in the next numDays days
@@ -76,6 +92,7 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
+
 
 		return 0;
 	}
@@ -120,6 +137,7 @@ public class CatCafe implements Iterable<Cat> {
 
 			// search the node of c
 			CatNode cur = searchCat(root, c);
+
 
 			//rotate
 			while(cur != root){
@@ -227,39 +245,36 @@ public class CatCafe implements Iterable<Cat> {
 			 * TODO: ADD YOUR CODE HERE
 			 */
 			// remove seniorC to the left subtree
+			CatNode cur = searchCat(root, c);
 			removeCat(root, c);
-			CatNode cur = searchCat(root, root.catEmployee);
 
-			while(cur!=root) {
+
+			while(cur.parent != null && cur.catEmployee.getFurThickness() < cur.parent.catEmployee.getFurThickness()) {
 				// if maxHeap still maintains, no need to downheap
-				if (cur.parent!= null && cur.catEmployee.getFurThickness() < cur.parent.catEmployee.getFurThickness()) {
-					break;
-				}
 				// if maxheap breaks, do downheap
 				// determine which of the two children should be swapped in the parent position to do correct rotation
-				else {
+
 					maxHeapify(cur);
 					cur = cur.parent;
-				}
 			}
 			return cur;
 		}
 
 
 
-
 		//helper method: removeCat
 		private CatNode removeCat(CatNode root, Cat c) {
+
 			if (root == null) { //tree is empty so nothing to remove
 				return null;
 			}
 			//if seniority of c < root.key, search to the left
 			else if (c.compareTo(root.catEmployee) < 0) {
-				root = removeCat(root.junior, c);
+				root.junior = removeCat(root.junior, c);
 			}
 			//if seniority of c > root.key, search to the right
 			else if (c.compareTo(root.catEmployee) > 0) {
-				root = removeCat(root.senior, c);
+				root.senior = removeCat(root.senior, c);
 			}
 			//if there is no left child, make root equal to right child
 			else if (root.junior == null) {
@@ -267,6 +282,7 @@ public class CatCafe implements Iterable<Cat> {
 			}
 			//if there is no right child, make root equal to left child
 			else if (root.senior == null){
+
 				root = root.junior;
 			}
 			// if c has both children
@@ -300,7 +316,7 @@ public class CatCafe implements Iterable<Cat> {
 			if(root.junior == null){
 				return root.catEmployee;
 			} else {
-				root = root.senior;
+				root = root.junior;
 			}
 			return root.findMostJunior();
 		}
