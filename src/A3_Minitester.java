@@ -186,9 +186,7 @@ class test_retire_5 implements Runnable{
         CatCafe cafe = new CatCafe();
         cafe.hire(A);
         cafe.hire(B);
-        cafe.printTree(cafe.root);
         cafe.retire(A);
-        cafe.printTree(cafe.root);
 
 
         if (!(cafe.root.catEmployee.equals(B) && cafe.root.junior == null && cafe.root.senior==null)){

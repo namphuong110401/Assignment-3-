@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 
 public class CatCafe implements Iterable<Cat> {
 	public CatNode root;
@@ -19,15 +20,23 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
+		CatCafe newCafe = new CatCafe();
+		CatCafeIterator cafeIterator = new CatCafeIterator();
+		for (Cat cat: cafe){
+			newCafe.
+		}
 
-		this.root = cafe.root;
-		this.root.senior = cafe.root.senior;
-		this.root.junior = cafe.root.junior;
-		this.root.parent = cafe.root.parent;
-		this.root.catEmployee = cafe.root.catEmployee;
 
 
-	}
+
+
+			newCafe.root = cafe.root;
+			newCafe.root.senior = cafe.root.senior;
+			newCafe.root.junior = cafe.root.junior;
+			newCafe.root.parent = cafe.root.parent;
+		}
+
+
 
 
 	// add a cat to the cafe database
@@ -246,7 +255,7 @@ public class CatCafe implements Iterable<Cat> {
 			 */
 			// remove seniorC to the left subtree
 			CatNode cur = searchCat(root, c);
-			removeCat(root, c);
+			root = removeCat(root, c);
 
 
 			while(cur.parent != null && cur.catEmployee.getFurThickness() < cur.parent.catEmployee.getFurThickness()) {
@@ -257,7 +266,7 @@ public class CatCafe implements Iterable<Cat> {
 					maxHeapify(cur);
 					cur = cur.parent;
 			}
-			return cur;
+			return root;
 		}
 
 
@@ -343,25 +352,48 @@ public class CatCafe implements Iterable<Cat> {
 
 	private class CatCafeIterator implements Iterator<Cat> {
 		// HERE YOU CAN ADD THE FIELDS YOU NEED
+		private Stack<Cat> traversal;
 
 		private CatCafeIterator() {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
+			traversal = new Stack<Cat>();
+			moveLeft(root);
+
+		}
+		private void moveLeft(CatNode cur){
+			while (cur != null) {
+			traversal.push(cur.catEmployee);
+			cur = cur.junior;
+			}
 		}
 
 		public Cat next(){
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			return null;
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			CatNode cur = root;
+			cur.catEmployee = traversal.pop();
+			if(cur.senior != null){
+				moveLeft(cur.senior);
+			}
+			return cur.catEmployee;
+
+
 		}
 
 		public boolean hasNext() {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			return false;
+			if (root.senior == null && root.junior == null){
+				return false;
+			}
+			return true;
 		}
 
 	}

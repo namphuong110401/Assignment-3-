@@ -172,7 +172,7 @@ class shallow_copy1 implements Runnable{
             System.out.println("Shallow copy did not create a new CatCafe object");
         }
 
-        boolean CatNodeA = copy.root.senior == cafe.root.senior;
+        boolean CatNodeA = copy.root.senior!=null && copy.root.senior == cafe.root.senior;
         boolean CatNodeB = copy.root.junior.senior == cafe.root.junior.senior;
         boolean CatNodeC = copy.root.junior == cafe.root.junior;
         boolean CatNodeD = copy.root == cafe.root;
