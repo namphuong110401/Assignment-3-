@@ -288,8 +288,7 @@ class hire_rotation2 implements Runnable {
         CatCafe catCafe = new CatCafe();
         catCafe.hire(A);
         catCafe.hire(B);
-        catCafe.printTree(catCafe.root);
-        System.out.println(catCafe.root);
+
 
         if (!(catCafe.root.catEmployee.equals(B) && catCafe.root.junior.catEmployee.equals(A))) {
             throw new AssertionError("Left rotation did not work." +

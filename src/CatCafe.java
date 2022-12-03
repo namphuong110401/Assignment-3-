@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 
 public class CatCafe implements Iterable<Cat> {
 	public CatNode root;
@@ -23,17 +22,15 @@ public class CatCafe implements Iterable<Cat> {
 		CatCafe newCafe = new CatCafe();
 		CatCafeIterator cafeIterator = new CatCafeIterator();
 		for (Cat cat: cafe){
-			newCafe.
+
+			while (cafeIterator.hasNext()){
+				newCafe.root = cafe.root;
+				newCafe.root.senior = cafe.root.senior;
+				newCafe.root.junior = cafe.root.junior;
+				newCafe.root.parent = cafe.root.parent;
+			}
 		}
 
-
-
-
-
-			newCafe.root = cafe.root;
-			newCafe.root.senior = cafe.root.senior;
-			newCafe.root.junior = cafe.root.junior;
-			newCafe.root.parent = cafe.root.parent;
 		}
 
 
@@ -352,51 +349,54 @@ public class CatCafe implements Iterable<Cat> {
 
 	private class CatCafeIterator implements Iterator<Cat> {
 		// HERE YOU CAN ADD THE FIELDS YOU NEED
-		private Stack<Cat> traversal;
+		ArrayList<CatNode> catArrayList;
+
 
 		private CatCafeIterator() {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			traversal = new Stack<Cat>();
-			moveLeft(root);
-
+			insertJunior(root);
 		}
-		private void moveLeft(CatNode cur){
-			while (cur != null) {
-			traversal.push(cur.catEmployee);
-			cur = cur.junior;
+
+		private void insertJunior(CatNode current) {
+			// store all the left nodes of the given BST in an array
+			// so that the last node will be the smallest value in the BST.
+			while (current.junior != null) {
+				catArrayList.add(root);
+				current = current.junior;
 			}
 		}
 
-		public Cat next(){
+		public Cat next() {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			CatNode cur = root;
-			cur.catEmployee = traversal.pop();
-			if(cur.senior != null){
-				moveLeft(cur.senior);
+			// remove the last node from the array
+			int last = catArrayList.size() - 1;
+			CatNode cur = catArrayList.get(last);
+			catArrayList.remove(last);
+			// add all the left nodes of the right subtree of the removed topmost node in the array
+			// the new last node in the array will point to the next node in the inorder traversal
+			if (cur.senior != null) {
+				insertJunior(root.senior);
 			}
+			// return the removed node.
 			return cur.catEmployee;
-
-
 		}
 
 		public boolean hasNext() {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			if (root.senior == null && root.junior == null){
-				return false;
-			}
-			return true;
-		}
+			return !catArrayList.isEmpty();
 
+		}
 	}
+
 
 	public void printTree(CatNode root)
 	{
