@@ -288,6 +288,7 @@ class hire_rotation2 implements Runnable {
         CatCafe catCafe = new CatCafe();
         catCafe.hire(A);
         catCafe.hire(B);
+        catCafe.printTree(catCafe.root);
 
 
         if (!(catCafe.root.catEmployee.equals(B) && catCafe.root.junior.catEmployee.equals(A))) {

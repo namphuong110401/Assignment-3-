@@ -20,20 +20,15 @@ public class CatCafe implements Iterable<Cat> {
 		 * TODO: ADD YOUR CODE HERE
 		 */
 		CatCafe newCafe = new CatCafe();
-		CatCafeIterator cafeIterator = new CatCafeIterator();
-		for (Cat cat: cafe){
+		// CatCafeIterator cafeIterator = new CatCafeIterator();
+		cafe.iterator();
+		newCafe.root = cafe.root;
+		newCafe.root.senior = cafe.root.senior;
+		newCafe.root.junior = cafe.root.junior;
+		newCafe.root.parent = cafe.root.parent;
 
-			while (cafeIterator.hasNext()){
-				newCafe.root = cafe.root;
-				newCafe.root.senior = cafe.root.senior;
-				newCafe.root.junior = cafe.root.junior;
-				newCafe.root.parent = cafe.root.parent;
-			}
-		}
 
 		}
-
-
 
 
 	// add a cat to the cafe database
@@ -144,43 +139,45 @@ public class CatCafe implements Iterable<Cat> {
 			// search the node of c
 			CatNode cur = searchCat(root, c);
 
-
 			//rotate
 			while(cur != root){
 				maxHeapify(cur);
 				cur = cur.parent;
 			}
-			return cur;
+
+			return root;
 		}
 
 
 		//Helper method to do correct rotation
 		private void maxHeapify(CatNode cur){
-			//if c has thicker fur than its junior,  do right rotation
-			if (cur.junior != null && cur.catEmployee.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
-				rightRotate(cur);
-			}
-			// if c has thinner fur than its senior, do left rotation
-			else if (cur.senior != null && cur.catEmployee.getFurThickness() < cur.senior.catEmployee.getFurThickness()) {
-				leftRotate(cur);
+			CatNode parent = cur.parent;
+			if(cur.catEmployee.getFurThickness() > parent.catEmployee.getFurThickness()) {
+				//if c has thicker fur than its junior,  do right rotation
+				if (cur == parent.junior) {
+					rightRotate(parent);
+				}
+				// if c has thinner fur than its senior, do left rotation
+				else if (cur == parent.senior) {
+					leftRotate(parent);
+				}
 			}
 		}
 
 		//Helper method: search cat
 		private CatNode searchCat(CatNode root, Cat c){
-			CatNode cur = root;
 			while (true) {
-				if (c.compareTo(cur.catEmployee) > 0) {
-					return searchCat(cur.senior, c);
+				if (c.compareTo(root.catEmployee) > 0) {
+					return searchCat(root.senior, c);
 				}
-				else if (c.compareTo(cur.catEmployee) < 0) {
-					return searchCat(cur.junior, c);
+				else if (c.compareTo(root.catEmployee) < 0) {
+					return searchCat(root.junior, c);
 				}
 				else {
 					break;
 				}
 			}
-			return cur;
+			return root;
 		}
 
 		//Helper method: insert cat
@@ -208,18 +205,21 @@ public class CatCafe implements Iterable<Cat> {
 			if (y.junior != null) {
 				y.junior.parent = x;
 			}
-			y.parent = x.parent;
+
 			if(x.parent == null){
 				root = y;
 			}
+
 			//if x is the left child of its parent p, make y as the left child of p
 			else if (x == x.parent.junior) {
 				x.parent.junior = y;
 			} else { // assign y as the right child of p
 				x.parent.senior = y;
 			}
-			y.junior = x;
 			x.parent = y; // make y as the parent of x
+			y.junior = x;
+
+
 
 			}
 
@@ -241,7 +241,7 @@ public class CatCafe implements Iterable<Cat> {
 			} else { //assign x as the left child of p
 				x.parent.junior = y;
 			}
-			y.senior = x;
+			x.senior = y;
 			y.parent = x; // make x as the parent of y
 		}
 
