@@ -8,7 +8,6 @@ public class CatCafe implements Iterable<Cat> {
 	public CatCafe() {
 	}
 
-
 	public CatCafe(CatNode dNode) {
 		this.root = dNode;
 	}
@@ -19,21 +18,15 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
-		CatCafe newCafe = new CatCafe();
-		// CatCafeIterator cafeIterator = new CatCafeIterator();
-		cafe.iterator();
-		newCafe.root = cafe.root;
-		newCafe.root.senior = cafe.root.senior;
-		newCafe.root.junior = cafe.root.junior;
-		newCafe.root.parent = cafe.root.parent;
-
-
+		for (Cat cat : cafe) {
+			this.hire(cat);
 		}
+	}
 
 
 	// add a cat to the cafe database
 	public void hire(Cat c) {
-		if (root == null) 
+		if (root == null)
 			root = new CatNode(c);
 		else
 			root = root.hire(c);
@@ -41,8 +34,15 @@ public class CatCafe implements Iterable<Cat> {
 
 	// removes a specific cat from the cafe database
 	public void retire(Cat c) {
-		if (root != null)
-			root = root.retire(c);
+		if (root != null) {
+			CatNode newRoot = root.retire(c);
+			System.out.println("---- NEW ROOT --------");
+			System.out.println(newRoot);
+			if (newRoot != root && newRoot != null) {
+				newRoot.parent = null;
+			}
+			root = newRoot;
+		}
 	}
 
 	// get the oldest hire in the cafe
@@ -61,29 +61,19 @@ public class CatCafe implements Iterable<Cat> {
 		return root.findMostJunior();
 	}
 
-	// returns a list of cats containing the top numOfCatsToHonor cats 
-	// in the cafe with the thickest fur. Cats are sorted in descending 
-	// order based on their fur thickness. 
+	// returns a list of cats containing the top numOfCatsToHonor cats
+	// in the cafe with the thickest fur. Cats are sorted in descending
+	// order based on their fur thickness.
 	public ArrayList<Cat> buildHallOfFame(int numOfCatsToHonor) {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
 		ArrayList<Cat> listOfHonor = new ArrayList<>(numOfCatsToHonor);
-		if(numOfCatsToHonor == 1){
-			listOfHonor.add(root.catEmployee);
-		} else {
-			while (root != null && numOfCatsToHonor != 1) {
-				// add the root first
-				listOfHonor.add(root.catEmployee);
-				// add the child that has thicker fur
-				if (root.senior.catEmployee.getFurThickness() > root.junior.catEmployee.getFurThickness()) {
-					listOfHonor.add(root.senior.catEmployee);
-				} else {
-					listOfHonor.add(root.junior.catEmployee);
-				}
-				retire(root.catEmployee);
-				numOfCatsToHonor--;
-			}
+		CatCafe copy = new CatCafe(this);
+		while(numOfCatsToHonor > 0 && copy.root != null) {
+			listOfHonor.add(copy.root.catEmployee);
+			--numOfCatsToHonor;
+			copy.retire(copy.root.catEmployee);
 		}
 		return listOfHonor;
 	}
@@ -93,20 +83,67 @@ public class CatCafe implements Iterable<Cat> {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
-
-
-		return 0;
+		double sum = 0;
+		CatCafeIterator itr = new CatCafeIterator();
+		while(itr.hasNext()){
+			Cat cat = itr.next();
+			if(cat.getDaysToNextGrooming() <= numDays){
+				sum += cat.getExpectedGroomingCost();
+			}
+		}
+		return sum;
 	}
 
-	// returns a list of list of Cats. 
-	// The cats in the list at index 0 need be groomed in the next week. 
-	// The cats in the list at index i need to be groomed in i weeks. 
-	// Cats in each sublist are listed in from most senior to most junior. 
+	// returns a list of list of Cats.
+	// The cats in the list at index 0 need be groomed in the next week.
+	// The cats in the list at index i need to be groomed in i weeks.
+	// Cats in each sublist are listed in from most senior to most junior.
 	public ArrayList<ArrayList<Cat>> getGroomingSchedule() {
 		/*
 		 * TODO: ADD YOUR CODE HERE
 		 */
-		return null;
+		// Create the 2D ArrayList
+		int size = countWeek();
+		ArrayList<ArrayList<Cat> > scheduleList = new ArrayList<>(size);
+
+		// loop from 0 to totalWeeks
+		// in that loop, call catListForWeek;
+		for (int i=0; i < size; i++){
+			scheduleList.add(addCatForWeek(i));
+		}
+		return scheduleList;
+	}
+
+	// Helper method that counts the total number of weeks
+	private int countWeek(){
+		int numOfWeeks = 1;
+		CatCafeIterator itr = new CatCafeIterator();
+		while(itr.hasNext()) {
+			Cat cat = itr.next();
+			if (cat.getDaysToNextGrooming() > itr.next().getDaysToNextGrooming()){
+				numOfWeeks += cat.getDaysToNextGrooming()/7;
+			} else{
+				numOfWeeks += itr.next().getDaysToNextGrooming()/7;
+			}
+		}
+
+		return numOfWeeks;
+	}
+
+	// Helper method that takes an int week as a parameter and returns an ArrayList of all cats with grooming days during that week
+	private ArrayList<Cat> addCatForWeek(int week){
+		ArrayList<Cat> catListForWeek = new ArrayList<>();
+		CatCafeIterator itr = new CatCafeIterator();
+		int min = 7*week;
+		int max = 7*(week+1);
+		while(itr.hasNext()) {
+			Cat cat = itr.next();
+			if (min <= cat.getDaysToNextGrooming() && cat.getDaysToNextGrooming() < max){
+				catListForWeek.add(cat);
+			}
+		}
+
+		return catListForWeek;
 	}
 
 
@@ -135,38 +172,64 @@ public class CatCafe implements Iterable<Cat> {
 			 */
 			// add the element to the heap as binary search tree
 			insertCat(null, root, c);
-
 			// search the node of c
 			CatNode cur = searchCat(root, c);
 
 			//rotate
 			while(cur != root){
-				maxHeapify(cur);
+				cur = maxUpHeapify(cur);
 				cur = cur.parent;
 			}
-
 			return root;
 		}
 
 
 		//Helper method to do correct rotation
-		private void maxHeapify(CatNode cur){
+		private CatNode maxUpHeapify(CatNode cur){
 			CatNode parent = cur.parent;
 			if(cur.catEmployee.getFurThickness() > parent.catEmployee.getFurThickness()) {
 				//if c has thicker fur than its junior,  do right rotation
 				if (cur == parent.junior) {
 					rightRotate(parent);
+					return cur.senior;
 				}
 				// if c has thinner fur than its senior, do left rotation
 				else if (cur == parent.senior) {
 					leftRotate(parent);
+					return cur.junior;
 				}
 			}
+			return cur;
 		}
+		private boolean maxDownHeapify(CatNode cur){
+			if (cur.senior == null && cur.junior == null) return false;
+			if (cur.senior == null && cur.catEmployee.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
+				rightRotate(cur);
+				return true;
+			}
+			if (cur.junior == null && cur.catEmployee.getFurThickness() < cur.senior.catEmployee.getFurThickness()){
+				leftRotate(cur);
 
+				return true;
+			}
+			if (cur.junior != null && cur.senior != null) {
+				if (cur.senior.catEmployee.getFurThickness() > cur.junior.catEmployee.getFurThickness()) {
+					if (cur.catEmployee.getFurThickness() < cur.senior.catEmployee.getFurThickness()) {
+						leftRotate(cur);
+						return true;
+					}
+				} else {
+					if (cur.catEmployee.getFurThickness() < cur.junior.catEmployee.getFurThickness()) {
+						rightRotate(cur);
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		//Helper method: search cat
 		private CatNode searchCat(CatNode root, Cat c){
-			while (true) {
+			while (root != null) {
 				if (c.compareTo(root.catEmployee) > 0) {
 					return searchCat(root.senior, c);
 				}
@@ -202,6 +265,7 @@ public class CatCafe implements Iterable<Cat> {
 		private void leftRotate(CatNode x){
 			CatNode y = x.senior; // assign x as the parent of the left subtree of y
 			x.senior = y.junior;
+
 			if (y.junior != null) {
 				y.junior.parent = x;
 			}
@@ -216,12 +280,12 @@ public class CatCafe implements Iterable<Cat> {
 			} else { // assign y as the right child of p
 				x.parent.senior = y;
 			}
+			y.parent = x.parent;
 			x.parent = y; // make y as the parent of x
 			y.junior = x;
 
 
-
-			}
+		}
 
 		//helper method: right rotation
 		private void rightRotate(CatNode x){
@@ -231,7 +295,7 @@ public class CatCafe implements Iterable<Cat> {
 			if(y.senior != null){
 				y.senior.parent = x;
 			}
-			y.parent = x.parent;
+
 			if(x.parent == null){
 				root = y;
 			}
@@ -241,8 +305,10 @@ public class CatCafe implements Iterable<Cat> {
 			} else { //assign x as the left child of p
 				x.parent.junior = y;
 			}
-			x.senior = y;
-			y.parent = x; // make x as the parent of y
+
+			y.parent = x.parent;
+			x.parent = y;
+			y.senior = x;
 		}
 
 		// remove c from the tree rooted at this and returns the root of the resulting tree
@@ -251,26 +317,34 @@ public class CatCafe implements Iterable<Cat> {
 			 * TODO: ADD YOUR CODE HERE
 			 */
 			// remove seniorC to the left subtree
-			CatNode cur = searchCat(root, c);
-			root = removeCat(root, c);
-
-
-			while(cur.parent != null && cur.catEmployee.getFurThickness() < cur.parent.catEmployee.getFurThickness()) {
-				// if maxHeap still maintains, no need to downheap
-				// if maxheap breaks, do downheap
-				// determine which of the two children should be swapped in the parent position to do correct rotation
-
-					maxHeapify(cur);
-					cur = cur.parent;
+			if (root == null) return null;
+			// find node that have to remove
+			CatNode removedNode = searchCat(this, c);
+			boolean mightNeedHeapify = false;
+			if (removedNode == root && root.junior != null && root.senior != null) {
+				mightNeedHeapify = true;
 			}
-			return root;
+			if (removedNode == null) return this;
+			CatNode newRoot = removeCat(this, c);
+
+
+
+			// return new root node
+			if (mightNeedHeapify) {
+				CatNode cur = root;
+				while (cur.junior != null || cur.senior != null) {
+					boolean changed = maxDownHeapify(cur);
+					if (!changed) break;
+				}
+				return root;
+			}
+			return newRoot;
 		}
 
 
 
 		//helper method: removeCat
 		private CatNode removeCat(CatNode root, Cat c) {
-
 			if (root == null) { //tree is empty so nothing to remove
 				return null;
 			}
@@ -288,7 +362,6 @@ public class CatCafe implements Iterable<Cat> {
 			}
 			//if there is no right child, make root equal to left child
 			else if (root.senior == null){
-
 				root = root.junior;
 			}
 			// if c has both children
@@ -306,12 +379,14 @@ public class CatCafe implements Iterable<Cat> {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			if(root.senior == null){
-				return root.catEmployee;
+
+			if(this == null){
+				return null;
+			} else if (this.senior == null) {
+				return this.catEmployee;
 			} else {
-				root = root.senior;
+				return this.senior.findMostSenior();
 			}
-			return root.findMostSenior();
 		}
 
 		// find the cat with lowest seniority in the tree rooted at this
@@ -319,12 +394,14 @@ public class CatCafe implements Iterable<Cat> {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
-			if(root.junior == null){
-				return root.catEmployee;
+
+			if(this == null){
+				return null;
+			} else if (this.junior == null) {
+				return this.catEmployee;
 			} else {
-				root = root.junior;
+				return this.junior.findMostJunior();
 			}
-			return root.findMostJunior();
 		}
 
 		// Feel free to modify the toString() method if you'd like to see something else displayed.
@@ -356,16 +433,18 @@ public class CatCafe implements Iterable<Cat> {
 			/*
 			 * TODO: ADD YOUR CODE HERE
 			 */
+			catArrayList = new ArrayList<CatNode>();
 			insertJunior(root);
 		}
 
 		private void insertJunior(CatNode current) {
-			// store all the left nodes of the given BST in an array
-			// so that the last node will be the smallest value in the BST.
-			while (current.junior != null) {
-				catArrayList.add(root);
-				current = current.junior;
+			// inorder traversal
+			if (current == null) {
+				return;
 			}
+			insertJunior(current.senior);
+			catArrayList.add(current);
+			insertJunior(current.junior);
 		}
 
 		public Cat next() {
@@ -381,9 +460,6 @@ public class CatCafe implements Iterable<Cat> {
 			catArrayList.remove(last);
 			// add all the left nodes of the right subtree of the removed topmost node in the array
 			// the new last node in the array will point to the next node in the inorder traversal
-			if (cur.senior != null) {
-				insertJunior(root.senior);
-			}
 			// return the removed node.
 			return cur.catEmployee;
 		}
@@ -426,7 +502,7 @@ public class CatCafe implements Iterable<Cat> {
 	public static void main(String[] args) {
 		Cat B = new Cat("Buttercup", 45, 53, 5, 85.0);
 		Cat C = new Cat("Chessur", 8, 23, 2, 250.0);
-		Cat J = new Cat("Jonesy", 0, 21, 12, 30.0);	
+		Cat J = new Cat("Jonesy", 0, 21, 12, 30.0);
 		Cat JJ = new Cat("JIJI", 156, 17, 1, 30.0);
 		Cat JTO = new Cat("J. Thomas O'Malley", 21, 10, 9, 20.0);
 		Cat MrB = new Cat("Mr. Bigglesworth", 71, 0, 31, 55.0);
@@ -441,5 +517,4 @@ public class CatCafe implements Iterable<Cat> {
 
 
 }
-
 

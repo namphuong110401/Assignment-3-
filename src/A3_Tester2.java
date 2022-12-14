@@ -138,8 +138,11 @@ class findMostJunior3 implements Runnable{
         catCafe.hire(D);
         catCafe.hire(E);
 
+
         Cat mostJunior = catCafe.root.senior.findMostJunior();
         Cat expected = C;
+
+
 
         if (!(mostJunior.equals(expected))) {
             throw new AssertionError("findMostJunior() did not return the correct value."
@@ -288,7 +291,6 @@ class hire_rotation2 implements Runnable {
         CatCafe catCafe = new CatCafe();
         catCafe.hire(A);
         catCafe.hire(B);
-        catCafe.printTree(catCafe.root);
 
 
         if (!(catCafe.root.catEmployee.equals(B) && catCafe.root.junior.catEmployee.equals(A))) {
@@ -337,6 +339,8 @@ class hire_rotation4 implements Runnable {
         catCafe.hire(B);
         catCafe.hire(C);
 
+        catCafe.printTree(catCafe.root);
+
         if (!(catCafe.root.catEmployee.equals(C) && catCafe.root.senior.catEmployee.equals(B) && catCafe.root.senior.junior.catEmployee.equals(A))) {
             throw new AssertionError("Left and right rotations did not work." +
                     " Cat C should be root, Cat B should be C's senior and Cat A should be B's junior");
@@ -374,6 +378,7 @@ class hire_megaRotation implements Runnable{
         catCafe.hire(H);
         catCafe.hire(I);
 
+
         // tree should end up looking like this (going from top to bottom):
 
         //                      (root)
@@ -408,12 +413,15 @@ class hire_megaRotation implements Runnable{
         //              \
         //                H (30, 28)
 
+
+
         if (!(catCafe.root.catEmployee.equals(I))) {
             throw new AssertionError("Incorrect root." +
                     "Cat I should be root but got " + catCafe.root.catEmployee);
         }
 
         CatCafe.CatNode current = catCafe.root;
+
 
         while (current.junior != null) {
             current = current.junior;
@@ -462,11 +470,13 @@ class retire_rotation1 implements Runnable{
 
         catCafe.retire(B);
 
+
         if (!(catCafe.root.catEmployee.equals(C) && catCafe.root.junior.catEmployee.equals(JTO) && catCafe.root.senior == null)) {
             throw new AssertionError("Retire did not work properly." +
                     "\n Cat C should be root and Cat JTO should be its junior but got " + catCafe.root
                     + " as root and " + catCafe.root.junior + " as its junior");
         }
+
 
         if (catCafe.root.parent != null || catCafe.root.junior.parent != catCafe.root) {
             throw new AssertionError("Parent pointers are not set correctly.");
@@ -493,7 +503,11 @@ class retire_rotation2 implements Runnable{
         catCafe.hire(J);
         catCafe.hire(MrsN);
 
+
+
         catCafe.retire(MrsN);
+
+
 
         if (!(catCafe.root.catEmployee.equals(C))) {
             throw new AssertionError("Retire did not work properly." +
@@ -562,7 +576,9 @@ class retire_megaRotation3 implements Runnable{
         catCafe.hire(L);
         catCafe.hire(M);
 
+
         catCafe.retire(I);
+
         // should move K up to the root
         // then down-heap through rotations
         // to the right place (as the senior to M at level 5)
@@ -939,6 +955,7 @@ class hallOfFame1 implements Runnable{
         catCafe.hire(B);
         catCafe.hire(C);
         catCafe.hire(D);
+        catCafe.printTree(catCafe.root);
 
         ArrayList<Cat> hallOfFameExpected = new ArrayList<>();
         hallOfFameExpected.add(A);
@@ -947,6 +964,7 @@ class hallOfFame1 implements Runnable{
         hallOfFameExpected.add(B);
 
         ArrayList<Cat> hallOfFame = catCafe.buildHallOfFame(6);
+
 
         if (!(hallOfFame.size() == 4)) {
             throw new AssertionError("buildHallOfFame() did not work properly when numOfCatsToHonor" +
@@ -1302,44 +1320,18 @@ class iterator2 implements Runnable{
 
 public class A3_Tester2 {
     static String[] tests = {
-            "findMostSenior1",
-            "findMostSenior2",
-            "findMostSenior3",
-            "findMostJunior1",
-            "findMostJunior2",
-            "findMostJunior3",
-            "shallow_copy1",
-            "shallow_copy2",
-            "shallow_copy3",
-            "hire_rotation1",
-            "hire_rotation2",
-            "hire_rotation3",
-            "hire_rotation4",
-            "hire_megaRotation",
-            "retire_rotation1",
+
+
             "retire_rotation2",
             "retire_megaRotation3",
-            "retire_edgeCase1",
-            "retire_edgeCase2",
-            "retire_edgeCase4",
-            "retire_edgeCase5",
-            "retire_edgeCase6",
-            "retire_edgeCase7",
-            "retire_edgeCase8",
-            "retire_edgeCase9",
-            "hire_retire1",
+
+
             "hallOfFame1",
             "hallOfFame2",
             "hallOfFame3",
             "hallOfFame4",
             "hallOfFame5",
-            "budgetGroomingExpenses1",
-            "budgetGroomingExpenses2",
-            "budgetGroomingExpenses3",
-            "budgetGroomingExpenses4",
-            "budgetGroomingExpenses5",
-            "iterator1",
-            "iterator2"
+
     };
     public static void main(String[] args) {
         int numPassed = 0;
